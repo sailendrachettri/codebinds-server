@@ -11,12 +11,21 @@ const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
 
 
 // ROUTE 1: Create an api for registration page using post requrest : "api/auth/register"
-router.post('/register', async (req, res) => {
+router.post('/register', [
+    body("username", "Username length should be more than 3 characters.").isLength({ min: 5 }),
+    body("phone", "Invalid phone number").isLength({min: 10, max: 10}),
+    body("password", "Weak Password, make it stronger by using Alphanumberic and symbols").isLength({min: 6})
+], async (req, res) => {
     let success = false;
 
     try {
-        let user = await Users.findOne({ username: req.body.username });
+        // express validation
+        const error = validationResult(req);
+        if (!(error.isEmpty())) {
+            return res.status(401).json({ success, errors: error.array()[0]["msg"] });
+        }
 
+        let user = await Users.findOne({ username: req.body.username });
         // compare password with compirm password
         if (!(req.body.password == req.body.cpassword))
             return res.status(400).json({ success, message: "Password doesn't match" })
@@ -42,11 +51,12 @@ router.post('/register', async (req, res) => {
             }
             const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
-            res.status(200).json({ success, message: "Registration successful!", auth_token, username : user.username })
+            res.status(200).json({ success, message: "Registration successful!", auth_token, username: user.username })
         }
 
     } catch (error) {
-        res.status(500).send("Internal server error");
+        res.status(500).json(error);
+        // res.status(500).send("Internal server error");
     }
 })
 
@@ -55,6 +65,7 @@ router.post('/login', async (req, res) => {
     let success = false;
 
     try {
+
         let user = await Users.findOne({ username: req.body.username });
 
         // if user doesn't exist 
@@ -75,7 +86,7 @@ router.post('/login', async (req, res) => {
 
 
         success = true;
-        res.status(200).json({ success, message: "Logged In successful!", auth_token, username : user.username });
+        res.status(200).json({ success, message: "Logged In successful!", auth_token, username: user.username });
 
     } catch (error) {
         res.status(500).json({ success, message: "Internal server error" });
