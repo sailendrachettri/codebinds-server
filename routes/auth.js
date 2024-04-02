@@ -61,10 +61,18 @@ router.post('/register', [
 })
 
 // ROUTE 3: Create an api for login page using post requrest : "api/auth/login"
-router.post('/login', async (req, res) => {
+router.post('/login', [
+    body("username", "Invalid credentials").isLength({min: 3}),
+    body("password", "Invalid credentials").isLength({min: 3})
+] ,async (req, res) => {
     let success = false;
 
     try {
+         // express validation
+         const error = validationResult(req);
+         if (!(error.isEmpty())) {
+             return res.status(401).json({ success, errors: error.array()[0]["msg"] });
+         }
 
         let user = await Users.findOne({ username: req.body.username });
 
