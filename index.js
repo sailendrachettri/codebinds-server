@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors())
 
 // Available routes
-app.use('/api/auth', require('./routes/auth.js'));
+app.use('/api/auth', require('./routes/auth'));
 
 
 app.listen(PORT, ()=>{

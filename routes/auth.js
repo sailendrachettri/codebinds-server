@@ -22,7 +22,7 @@ router.post('/register', [
         // express validation
         const error = validationResult(req);
         if (!(error.isEmpty())) {
-            return res.status(401).json({ success, errors: error.array()[0]["msg"] });
+            return res.status(401).json({ success, message: error.array()[0]["msg"] });
         }
 
         let user = await Users.findOne({ username: req.body.username });
@@ -71,15 +71,15 @@ router.post('/login', [
          // express validation
          const error = validationResult(req);
          if (!(error.isEmpty())) {
-             return res.status(401).json({ success, errors: error.array()[0]["msg"] });
-         }
-
+             return res.status(401).json({ success, message: error.array()[0]["msg"] });
+        }
+        
         let user = await Users.findOne({ username: req.body.username });
 
         // if user doesn't exist 
         if (!user)
             return res.status(404).json({ success, message: "User doesn't exist. Try registration first!" });
-
+            
         // compare user entered password with hash password if it false the return
         if (!(bcryptjs.compareSync(req.body.password, user.password)))
             return res.status(400).json({ success, message: "Invalid username or password" });
@@ -92,6 +92,7 @@ router.post('/login', [
         }
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
+        
 
         success = true;
         res.status(200).json({ success, message: "Logged In successful!", auth_token, username: user.username });
