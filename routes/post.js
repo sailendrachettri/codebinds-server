@@ -7,6 +7,7 @@ const Post = require('../models/PostSchema');
 const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
 const jwt = require("jsonwebtoken");
 
+// ROUTE 1: SAVE DATA IN DATABASE
 router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
     const { originalname, path } = req.file;
     const parts = originalname.split('.');
@@ -35,12 +36,20 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
     });
 })
 
+// ROUTE 2: FETCH ALL THE POSTS AS A CARD IN HOMEPAGE
 router.get('/fetchpost', async (req, res) => {
     const posts = await Post.find()
     .populate('author', ['username'])
     .sort({createdAt: -1})
     .limit(20)
     res.json(posts)
+})
+
+// ROUTE 3: NOW  FETCH CARDS AS A SINGLE PAGE
+router.get('/card/:id', async(req, res)=>{
+    const {id} = req.params;
+    const postDoc = await Post.findById(id).populate('author', 'username');
+    res.json(postDoc)
 })
 
 module.exports = router
