@@ -86,20 +86,40 @@ router.post('/login', [
 
         // jwt authentication 
         const data = {
-            user: {
-                id: user.id
-            }
+            id: user.id,
+            username: user.username
         }
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
-
-
-
         success = true;
-        res.status(200).json({ success, message: "Logged In successful!", auth_token, username: user.username });
+        res.cookie('auth_token', auth_token).status(200).json({ success, message: "Logged In successful!", auth_token, username: user.username });
 
     } catch (error) {
-        console.log("hereee");
         res.status(500).json({ success, message: "Internal server error" });
+    }
+})
+
+// ROUTE 3: Get all the user information (LOGGED IN)
+router.get('/profile', (req, res) => {
+    let success = false;
+    const { auth_token } = req.cookies;
+
+    try {
+        success = true;
+        const userInfo = jwt.verify(auth_token, JWT_SECRET_KEY);
+
+        res.json(userInfo);
+
+    } catch (err) {
+        res.json({ success, message: "Internal server error" })
+    }
+})
+
+// ROUTE 4: Handle logout
+router.post('/logout', (req, res) => {
+    try {
+        res.cookie('auth_token', '').json('ok'); // removing auth_token from cookie
+    } catch (err) {
+        res.status(500).json(err);
     }
 })
 

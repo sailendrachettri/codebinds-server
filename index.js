@@ -1,12 +1,13 @@
 const express = require("express");
 const db = require("./db")
-
-const PORT  = process.env.REACT_APP_PORT || 8000
 const app = express();
 const cors = require('cors')
 
-app.use(express.json())
-app.use(cors())
+const cookieParser = require("cookie-parser");
+const PORT  = process.env.REACT_APP_PORT || 8000
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+app.use(cookieParser());
+app.use(express.json());
 
 // Available routes
 app.use('/api/auth', require('./routes/auth'));
