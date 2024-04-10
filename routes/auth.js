@@ -87,14 +87,17 @@ router.post('/login', [
         // jwt authentication 
         const data = {
             id: user.id,
-            username: user.username
+            username: req.body.username
         }
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
-        success = true;
-        res.cookie('auth_token', auth_token).status(200).json({ success, message: "Logged In successful!", auth_token, username: user.username });
+
+        res.cookie('auth_token', auth_token).json({
+            id: user._id, 
+            username: req.body.username
+        });
 
     } catch (error) {
-        res.status(500).json({ success, message: "Internal server error" });
+        res.status(500).json({ success, message: "Internal server errrrror" });
     }
 })
 
@@ -107,6 +110,7 @@ router.get('/profile', (req, res) => {
         success = true;
         const userInfo = jwt.verify(auth_token, JWT_SECRET_KEY);
 
+        console.log("/profile ahth userinfo: ", userInfo);
         res.json(userInfo);
 
     } catch (err) {
