@@ -9,6 +9,9 @@ app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(cookieParser());
 app.use(express.json());
 
+// server static files
+app.use('/uploads', express.static(__dirname + '/uploads'))
+
 // Available routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/post', require('./routes/post'));

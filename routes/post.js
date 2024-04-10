@@ -17,7 +17,8 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
 
     // get the user data and send to client
     const { auth_token } = req.cookies;
-    jwt.verify(auth_token, JWT_SECRET_KEY, async(err, info) => {
+    jwt.verify(auth_token, JWT_SECRET_KEY, {}, async(err, info) => {
+        // if (err) throw err;
         if (err)
             return res.status(500).json({ message: "Internal server error" })
 
@@ -35,7 +36,10 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
 })
 
 router.get('/fetchpost', async (req, res) => {
-    const posts = await Post.find();
+    const posts = await Post.find()
+    .populate('author', ['username'])
+    .sort({createdAt: -1})
+    .limit(20)
     res.json(posts)
 })
 
