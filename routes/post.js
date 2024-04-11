@@ -9,31 +9,38 @@ const jwt = require("jsonwebtoken");
 
 // ROUTE 1: SAVE DATA IN DATABASE
 router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
-    const { originalname, path } = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
+    let success = false;
+
+    try {
+        const { originalname, path } = req.file;
+
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        const newPath = path + '.' + ext;
+        fs.renameSync(path, newPath);
 
 
-    // get the user data and send to client
-    const { auth_token } = req.cookies;
-    jwt.verify(auth_token, JWT_SECRET_KEY, {}, async (err, info) => {
-        // if (err) throw err;
-        if (err)
-            return res.status(500).json({ message: "Internal server error" })
+        // get the user data and send to client
+        const { auth_token } = req.cookies;
+        jwt.verify(auth_token, JWT_SECRET_KEY, {}, async (err, info) => {
+            // if (err) throw err;
+            if (err)
+                return res.status(500).json({ message: "Internal server error" })
 
-        const { title, summary, content } = req.body;
-        const postDoc = await Post.create({
-            title,
-            summary,
-            content,
-            cover: newPath,
-            author: info.id
-        })
+            const { title, summary, content } = req.body;
+            const postDoc = await Post.create({
+                title,
+                summary,
+                content,
+                cover: newPath,
+                author: info.id
+            })
 
-        res.json(postDoc)
-    });
+            res.json(postDoc)
+        });
+    } catch (err) {
+        res.status(500).json({success, message : "Internal server error", err});
+    }
 })
 
 // ROUTE 2: FETCH ALL THE POSTS AS A CARD IN HOMEPAGE
@@ -72,13 +79,13 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
         if (err)
             return res.status(500).json({ message: "Internal server error" })
 
-        const {id, title, summary, content } = req.body;
+        const { id, title, summary, content } = req.body;
         const postDoc = await Post.findById(id);
 
         const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-        
-        if(!isAuthor){
-            return res.status(400).json({message: "you are not an author"});            
+
+        if (!isAuthor) {
+            return res.status(400).json({ message: "you are not an author" });
         }
 
         await postDoc.updateOne({
