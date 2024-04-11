@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const uploadMiddleware = multer({ dest: 'uploads/' })
+const uploadMiddleware = multer({ dest: 'uploads/', limits: { fieldSize: 50 * 1024 * 1024 } }); // 50mb max size
 const fs = require('fs');
 const Post = require('../models/PostSchema');
 const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
