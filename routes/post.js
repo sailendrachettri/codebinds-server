@@ -78,7 +78,7 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
         const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
         
         if(!isAuthor){
-            return res.status(400).json("you are not an author");            
+            return res.status(400).json({message: "you are not an author"});            
         }
 
         await postDoc.updateOne({
