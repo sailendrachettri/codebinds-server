@@ -4,6 +4,7 @@ const { body, validationResult } = require("express-validator");
 const Users = require("../models/UserSchema");
 const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken");
+const Newslatter = require("../models/NewslatterSchema");
 
 
 const salt = bcryptjs.genSaltSync(10);
@@ -123,6 +124,31 @@ router.post('/logout', (req, res) => {
         res.cookie('auth_token', '').json('ok'); // removing auth_token from cookie
     } catch (err) {
         res.status(500).json(err);
+    }
+})
+
+// ROUTE 4: Handl the name and email for newslatters
+router.post('/newsletter', async (req, res) => {
+    let success = false;
+
+    try {
+        const { fullname, email } = req.body;
+
+        // first check if the email already present?
+        let usersemail = await Newslatter.findOne({ email });
+        if (usersemail) {
+            return res.status(400).json({ success, message: "Email already exist!", fullname });
+        }
+
+        // if email doesn't exist then add that email to database
+        success = true;
+
+        usersemail = await Newslatter.create({ fullname, email });
+        res.json({ success, message: "Newsletter subscribed!", fullname });
+
+    } catch (err) {
+        success = false;
+        res.status(500).json({success, message : "Internal server error"});
     }
 })
 
