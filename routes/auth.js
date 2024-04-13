@@ -92,7 +92,7 @@ router.post('/login', [
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
         res.cookie('auth_token', auth_token).json({
-            id: user._id, 
+            id: user._id,
             username: req.body.username
         });
 
@@ -109,11 +109,11 @@ router.get('/profile', (req, res) => {
     try {
         success = true;
         const userInfo = jwt.verify(auth_token, JWT_SECRET_KEY);
-
-        res.json(userInfo);
+        res.status(500).json(userInfo);
 
     } catch (err) {
-        res.json({ success, message: "Internal server error" })
+        success = false;
+        res.status(500).json({ success, message: "Internal server errorrr" })
     }
 })
 
