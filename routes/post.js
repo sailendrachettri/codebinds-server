@@ -39,17 +39,23 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
             res.json(postDoc)
         });
     } catch (err) {
-        res.status(500).json({success, message : "Internal server error", err});
+        res.status(500).json({ success, message: "Internal server error", err });
     }
 })
 
 // ROUTE 2: FETCH ALL THE POSTS AS A CARD IN HOMEPAGE
 router.get('/fetchpost', async (req, res) => {
-    const posts = await Post.find()
-        .populate('author', ['username'])
-        .sort({ createdAt: -1 })
-        .limit(20)
-    res.json(posts)
+    let success = false;
+    try {
+        const posts = await Post.find()
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .limit(20)
+        res.json(posts)
+    } catch (err) {
+        res.status(404).json({success, message: "Failed to fetch posts"})
+        console.log(err);
+     };
 })
 
 // ROUTE 3: NOW  FETCH CARDS AS A SINGLE PAGE
