@@ -3,9 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 const uploadMiddleware = multer({ dest: 'uploads/blog', limits: { fieldSize: 50 * 1024 * 1024 } }); // 50mb max size
 const fs = require('fs');
-const Post = require('../models/BlogSchema');
+const Blog = require('../models/BlogSchema');
 const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken"); 
 
 // ROUTE 1: SAVE DATA IN DATABASE
 router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
@@ -19,6 +19,8 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
         const newPath = path + '.' + ext;
         fs.renameSync(path, newPath);
 
+        console.log(newPath); 
+
 
         // get the user data and send to client
         const { auth_token } = req.cookies;
@@ -28,7 +30,7 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
                 return res.status(500).json({ message: "Internal server error" })
 
             const { title, summary, content } = req.body;
-            const postDoc = await Post.create({
+            const postDoc = await Blog.create({
                 title,
                 summary,
                 content,
@@ -47,10 +49,11 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
 router.get('/fetchpost', async (req, res) => {
     let success = false;
     try {
-        const posts = await Post.find()
+        const posts = await Blog.find()
             .populate('author', ['username'])
             .sort({ createdAt: -1 })
             .limit(20)
+
         res.json(posts)
     } catch (err) {
         res.status(404).json({success, message: "Failed to fetch posts"})
@@ -59,9 +62,11 @@ router.get('/fetchpost', async (req, res) => {
 })
 
 // ROUTE 3: NOW  FETCH CARDS AS A SINGLE PAGE
-router.get('/card/:id', async (req, res) => {
+router.get('/blogpost/:id', async (req, res) => {
     const { id } = req.params;
-    const postDoc = await Post.findById(id).populate('author', 'username');
+    console.log("blogpost: ", id);
+    const postDoc = await Blog.findById(id).populate('author', 'username');
+    console.log("postdoc:")
     res.json(postDoc)
 })
 
@@ -86,7 +91,7 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
             return res.status(500).json({ message: "Internal server error" })
 
         const { id, title, summary, content } = req.body;
-        const postDoc = await Post.findById(id);
+        const postDoc = await Blog.findById(id);
 
         const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
 
