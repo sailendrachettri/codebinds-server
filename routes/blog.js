@@ -25,7 +25,7 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
         jwt.verify(auth_token, JWT_SECRET_KEY, {}, async (err, info) => {
             // if (err) throw err;
             if (err)
-                return res.status(500).json({ message: "Internal server error" })
+                return res.status(500).json({ message: "Internal server error", err: err })
 
             const { title, summary, content } = req.body;
             const postDoc = await Blog.create({
