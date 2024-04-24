@@ -92,10 +92,14 @@ router.post('/login', [
         }
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
-        res.cookie('auth_token', auth_token).json({
+        res.cookie('auth_token', auth_token, {
+            secure: true
+
+        }).status(200).json({
             id: user._id,
-            username: req.body.username
+            username: req.body.username,
         });
+
 
     } catch (error) {
         res.status(500).json({ success, message: "Internal server errrrror" });
@@ -148,7 +152,7 @@ router.post('/newsletter', async (req, res) => {
 
     } catch (err) {
         success = false;
-        res.status(500).json({success, message : "Internal server error"});
+        res.status(500).json({ success, message: "Internal server error" });
     }
 })
 
