@@ -22,10 +22,12 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
 
         // get the user data and send to client
         const { auth_token } = req.cookies;
+        console.log("token: ",auth_token)
+        console.log("jwt secret: ",JWT_SECRET_KEY)
         jwt.verify(auth_token, JWT_SECRET_KEY, {}, async (err, info) => {
-            // if (err) throw err;
-            if (err)
-                return res.status(500).json({ message: "Internal server error", err: err })
+            if (err) throw err;
+            // if (err)
+            //     return res.status(500).json({ message: "Internal server error", err: err, token: auth_token })
 
             const { title, summary, content } = req.body;
             const postDoc = await Blog.create({
@@ -82,6 +84,7 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
 
     // get the user data and send to client
     const { auth_token } = req.cookies;
+    
     jwt.verify(auth_token, JWT_SECRET_KEY, {}, async (err, info) => {
         // if (err) throw err;
         if (err)
