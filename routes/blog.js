@@ -19,8 +19,6 @@ router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
         const newPath = path + '.' + ext;
         fs.renameSync(path, newPath);
 
-        console.log(newPath); 
-
 
         // get the user data and send to client
         const { auth_token } = req.cookies;
@@ -64,7 +62,6 @@ router.get('/fetchpost', async (req, res) => {
 // ROUTE 3: NOW  FETCH CARDS AS A SINGLE PAGE
 router.get('/blogpost/:id', async (req, res) => {
     const { id } = req.params;
-    console.log("blogpost: ", id);
     const postDoc = await Blog.findById(id).populate('author', 'username');
     console.log("postdoc:")
     res.json(postDoc)
