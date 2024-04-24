@@ -11,7 +11,6 @@ app.use(express.json());
 const DEVELOPMENT_URL = process.env.REACT_APP_DEVELOPMENT_CLIENT_URL;
 
 app.use(cors({credentials: true, origin: DEVELOPMENT_URL}))
-
 // server static files
 app.use('/uploads', express.static(__dirname + '/uploads'))
 
