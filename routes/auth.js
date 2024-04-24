@@ -110,7 +110,7 @@ router.get('/profile', (req, res) => {
     try {
         success = true;
         const userInfo = jwt.verify(auth_token, JWT_SECRET_KEY);
-        res.status(500).json(userInfo);
+        res.status(200).json(userInfo);
 
     } catch (err) {
         success = false;
