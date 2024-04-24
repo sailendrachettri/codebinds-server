@@ -92,6 +92,7 @@ router.post('/login', [
         }
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
+        // below secure: true and sameSite: none is very important in production 
         res.cookie('auth_token', auth_token, {
             secure: true,
             sameSite: 'none',
