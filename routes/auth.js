@@ -93,7 +93,8 @@ router.post('/login', [
         const auth_token = jwt.sign(data, JWT_SECRET_KEY);
 
         res.cookie('auth_token', auth_token, {
-            secure: true
+            secure: true,
+            sameSite: 'none',
 
         }).status(200).json({
             id: user._id,
