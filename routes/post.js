@@ -7,6 +7,8 @@ const Post = require('../models/PostSchema');
 const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
 const jwt = require("jsonwebtoken");
 
+const TOPFIVEPOSTS = 5;
+
 // ROUTE 1: SAVE DATA IN DATABASE
 router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
     let success = false;
@@ -105,6 +107,22 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
 
     });
 
+})
+
+
+// ROUTE 5: Fetch top five posts for similar reads
+router.get('/fetchtopfiveposts', async (req, res) => {
+    let success = false;
+    try {
+        const posts = await Post.find()
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .limit(TOPFIVEPOSTS)
+        res.json(posts)
+    } catch (err) {
+        res.status(404).json({success, message: "Failed to fetch posts"})
+        console.log(err);
+     };
 })
 
 module.exports = router

@@ -5,7 +5,9 @@ const uploadMiddleware = multer({ dest: 'uploads/blog', limits: { fieldSize: 50 
 const fs = require('fs');
 const Blog = require('../models/BlogSchema');
 const JWT_SECRET_KEY = process.env.REACT_APP_JWT_SECRET_KEY
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
+
+const TOPFIVEPOSTS = 5;
 
 // ROUTE 1: SAVE DATA IN DATABASE
 router.post('/create', uploadMiddleware.single('file'), async (req, res) => {
@@ -128,6 +130,21 @@ router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
 
     });
 
+})
+
+// ROUTE 7: Fetch top 5 articles for similar read section
+router.get('/fetchtopfiveblog', async (req, res) => {
+    let success = false;
+    try {
+        const posts = await Blog.find()
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .limit(TOPFIVEPOSTS)
+        res.json(posts)
+    } catch (err) {
+        res.status(404).json({success, message: "Failed to fetch posts"})
+        console.log(err);
+     };
 })
 
 module.exports = router
