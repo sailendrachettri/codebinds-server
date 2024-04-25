@@ -49,7 +49,7 @@ router.get('/fetchpost', async (req, res) => {
         const posts = await Blog.find()
             .populate('author', ['username'])
             .sort({ createdAt: -1 })
-            .limit(20)
+            .limit(5)
 
         res.json(posts)
     } catch (err) {
@@ -65,7 +65,30 @@ router.get('/blogpost/:id', async (req, res) => {
     res.json(postDoc)
 })
 
-// ROUTE 4: EDIT THE EXISTING POST
+// These ROUTE 4 & 5 is to fetch all the blog posts in homepage
+// ROUTE 4: FETCH TOP 5 THE POSTS AS A CARD IN HOMEPAGE
+router.get('/allfetchpost', async (req, res) => {
+    let success = false;
+    try {
+        const posts = await Blog.find()
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .limit(30)
+        res.json(posts)
+    } catch (err) {
+        res.status(404).json({success, message: "Failed to fetch posts"})
+        console.log(err);
+     };
+})
+
+// ROUTE 5: NOW  FETCH BLOG POST AS A SINGLE PAGE
+router.get('/allblogpost/:id', async (req, res) => {
+    const { id } = req.params;
+    const postDoc = await Post.findById(id).populate('author', 'username');
+    res.json(postDoc)
+})
+
+// ROUTE 6: EDIT THE EXISTING POST
 router.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
 
     let newPath = null;
