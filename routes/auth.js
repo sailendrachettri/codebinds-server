@@ -127,7 +127,7 @@ router.get('/profile', (req, res) => {
 // ROUTE 4: Handle logout
 router.post('/logout', (req, res) => {
     try {
-        res.cookie('auth_token', '').json('ok'); // removing auth_token from cookie
+        res.clearCookie('auth_token').json('ok'); // removing auth_token from cookie
     } catch (err) {
         res.status(500).json(err);
     }
